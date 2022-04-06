@@ -225,8 +225,7 @@ int fclose(int fd) {
     if (res == PEACHOS_ALL_OK) {
         file_free_descriptor(desc);
     }
-    out:
-        print("\nFile closed");    
+    out: 
         return res;
 }
 

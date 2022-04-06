@@ -33,6 +33,13 @@ struct process* process_get(int process_id) {
     return processes[process_id];
 }
 
+// Note: switches from current process to provided process
+int process_switch(struct process* process) {
+    // ToDo: in a better implementation we should sabe the current process state
+    current_process = process;
+    return 0;
+}
+
 // Note: this function will load the binary into memory
 // Note: this will resolve process: filesize, *ptr
 static int process_load_binary(const char* filename, struct process* process) {
@@ -133,6 +140,17 @@ int process_load(const char* filename, struct process** process) {
 
     out:
         return res;
+}
+
+// Note: loads a process, and switches to that process
+int process_load_switch(const char* filename, struct process** process) {
+    int res = process_load(filename, process);
+    // Check: if successfully loaded a process
+    if (res == 0) {
+        process_switch(*process);
+    }
+
+    return res;
 }
 
 // Note: returns PID

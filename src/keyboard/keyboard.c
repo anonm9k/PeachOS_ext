@@ -60,6 +60,10 @@ void keyboard_push(char c) {
     if (!process) {
         return;
     }
+    // Check: if character is null
+    if (c == 0x00) {
+        return;
+    }
 
     int real_index = keyboard_get_tail_index(process);
     process->keyboard.buffer[real_index] = c;

@@ -35,12 +35,34 @@ void terminal_putchar(int x, int y, char c, char colour)
     video_mem[(y * VGA_WIDTH) + x] = terminal_make_char(c, colour);
 }
 
+void terminal_backspace() {
+    if (terminal_row == 0 && terminal_col == 0)
+    {
+        return;
+    }
+
+    if (terminal_col == 0)
+    {
+        terminal_row -= 1;
+        terminal_col = VGA_WIDTH;
+    }
+
+    terminal_col -=1;
+    terminal_writechar(' ', 100);
+    terminal_col -=1;
+}
+
 void terminal_writechar(char c, char colour)
 {
     if (c == '\n')
     {
         terminal_row += 1;
         terminal_col = 0;
+        return;
+    }
+
+    if (c == 0x08) { // 0x08 is ASCII code for backspace
+        terminal_backspace();
         return;
     }
 
@@ -109,7 +131,7 @@ struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
 void kernel_main()
 {
     terminal_initialize();
-    print("Operaing system: PeachOS\n");
+    //print("Operaing system: PeachOS\n");
 
     // Creating GDT
     memset(gdt_real, 0x00, sizeof(gdt_real));
@@ -154,10 +176,11 @@ void kernel_main()
     keyboard_init();
 
     struct process* process = 0;
-    int res = process_load("0:/blank.bin", &process);
+    int res = process_load_switch("0:/blank.bin", &process);
     if (res != PEACHOS_ALL_OK) {
         panic("\nFailed to laod process!");
     }
+
     task_run_first_ever_task();
     while(1) {}
 }
