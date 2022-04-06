@@ -14,3 +14,6 @@ make all
 #   OS welcome screen
 #   Print can have size
 #   Scrolling capability in terminal
+
+#ToDoList(ELF loader)
+#   Implement .so dynamic loading functionality
