@@ -117,6 +117,14 @@ void* paging_align_address(void* ptr)
     return ptr;
 }
 
+// Note: works like ceiling function
+void* paging_align_to_lower_page(void* addr)
+{
+    uint32_t _addr = (uint32_t) addr;
+    _addr -= (_addr % PAGING_PAGE_SIZE);
+    return (void*) _addr;
+}
+
 // Note: maps virtual address to physical address in a directory
 int paging_map(struct paging_4gb_chunk* directory, void* virt, void* phys, int flags) {
     // Check: if virtual and physical addresses are page aligned

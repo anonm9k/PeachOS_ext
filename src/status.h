@@ -12,6 +12,6 @@
 #define ERDONLY         6 // file is read-only
 #define EUNIMP          7 // Unimplemented
 #define EISTKN          8 // Slot is taken
-
+#define EINFORMAT       9 // File format not valid
 
 #endif

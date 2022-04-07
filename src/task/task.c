@@ -7,7 +7,7 @@
 #include "idt/idt.h"
 #include "process.h"
 #include "string/string.h"
-
+#include "loader/formats/elfloader.h"
 
 
 // The current task that is running
@@ -227,6 +227,9 @@ int task_init(struct task* task, struct process* process) {
 
     // Here: we initilize the virtual addresses (all virtual! this is nuts!)
     task->registers.ip = PEACHOS_PROGRAM_VIRTUAL_ADDRESS;
+    if (process->filetype == PROCESS_FILETYPE_ELF) {
+        task->registers.ip = elf_header(process->elf_file)->e_entry;
+    }
     task->registers.ss = USER_DATA_SEGMENT;
     task->registers.cs = USER_CODE_SEGMENT;
     task->registers.esp = PEACHOS_PROGRAM_VIRTUAL_STACK_ADDRESS_START;

@@ -4,14 +4,35 @@
 #include "config.h"
 #include "task.h"
 
+#define PROCESS_FILETYPE_ELF    0
+#define PROCESS_FILETYPE_BINARY 1
+
+typedef unsigned char PROCESS_FILETYPE;
+
 struct process {
     uint16_t id;
+
     char filename[PEACHOS_MAX_PATH];
+
     struct task* task;
-    void* allocations[PEACHOS_MAX_PROGRAM_ALLOCATIONS]; // fail-safe, mem-leak
-    void* ptr; // physical address to process memory, once the process is loaded
-    void* stack; // physical address to process stack, once the process is loaded
-    uint32_t size; // Size of the data pointed by ptr
+    
+    // fail-safe, mem-leak
+    void* allocations[PEACHOS_MAX_PROGRAM_ALLOCATIONS]; 
+
+    // ELF? bin?
+    PROCESS_FILETYPE filetype; 
+
+    union {
+        void* ptr; // physical address to process memory, once the process is loaded
+        struct elf_file* elf_file;
+    };
+
+    // physical address to process stack, once the process is loaded
+    void* stack; 
+
+    // Size of the data pointed by ptr
+    uint32_t size; 
+
     struct keyboard_buffer {
         char buffer[PEACHOS_KEYBOARD_BUFFER_SIZE];
         int tail;

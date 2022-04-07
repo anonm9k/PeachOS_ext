@@ -23,3 +23,4 @@ getkey:
 
 
 section .data
+message: db 'Hello world', 0
