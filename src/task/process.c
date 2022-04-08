@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include "kernel.h"
 #include "process.h"
 #include "config.h"
@@ -38,6 +39,68 @@ int process_switch(struct process* process) {
     // ToDo: in a better implementation we should sabe the current process state
     current_process = process;
     return 0;
+}
+
+// Note: go thrugh given process mem allocations array to find empty slot
+static int process_find_free_allocation_index(struct process* process) {
+    int res = -ENOMEM;
+    for (int i = 0; i < PEACHOS_MAX_PROGRAM_ALLOCATIONS; i++) {
+        if (process->allocations[i] == 0) {
+            res = i;
+            break;
+        }
+    }
+
+    return res;
+}
+
+// Note: allocates heap for given process, and resolves void* allocations of that process
+void* process_malloc(struct process* process, size_t size) {
+    void* ptr = kzalloc(size);
+    if (!ptr) {
+        return 0;
+    }
+
+    int index = process_find_free_allocation_index(process);
+    if (index < 0) {
+        return 0;
+    }
+
+    process->allocations[index] = ptr;
+    return ptr;
+}   
+
+// Note: Given a process, checks if the ptr exists in its allocations array
+static bool process_is_process_pointer(struct process* process, void* ptr) {
+    for (int i = 0; i < PEACHOS_MAX_PROGRAM_ALLOCATIONS; i++) {
+        if (process->allocations[i] == ptr) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Note: removes the pointer from process allocations array
+void process_allocation_unjoin(struct process* process, void* ptr) {
+    for (int i = 0; i < PEACHOS_MAX_PROGRAM_ALLOCATIONS; i++) {
+        if (process->allocations[i] == ptr) {
+            process->allocations[i] = 0x00;
+        }
+    }
+}
+
+// Note: frees up the heap memory
+void process_free(struct process* process, void* ptr) {
+    // Check: if the pointer belong to the process
+    if (!process_is_process_pointer(process, ptr)) {
+        return;
+    }
+
+    // Here: we remove it from allocations array
+    process_allocation_unjoin(process, ptr);
+
+    // Here: we kfree the heap memory
+    kfree(ptr);
 }
 
 // Note: this function will load the binary into memory
@@ -87,7 +150,7 @@ static int process_load_binary(const char* filename, struct process* process) {
         return res;
 }
 
-//
+// Note: responsible for creating process from elf file
 int process_load_elf(const char* filename, struct process* process) {
     int res = 0;
     struct elf_file* elf_file = 0;
@@ -122,6 +185,7 @@ int process_map_binary(struct process* process) {
 }
 
 // Note: maps the elf program to virtual address
+// Note: for now it only maps a single elf segment
 int process_map_elf(struct process* process) {
     int res = 0;
 

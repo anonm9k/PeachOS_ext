@@ -1,6 +1,15 @@
-all:
-	nasm -f elf ./blank.asm -o ./build/blank.o
-	i686-elf-gcc -g -T ./linker.ld -o ./blank.elf -ffreestanding -O0 -nostdlib -fpic -g ./build/blank.o
+FILES = ./build/blank.o 
+INCLUDES = -I../stdlib/src
+FLAGS = -g
+
+
+all: $(FILES)
+	i686-elf-gcc -g -T ./linker.ld -o ./blank.elf -ffreestanding -O0 -nostdlib -fpic -g $(FILES) ../stdlib/stdlib.elf
+
+./build/blank.o: ./blank.c
+	i686-elf-gcc $(INCLUDES) $(FLAGS) -std=gnu99 -c ./blank.c -o ./build/blank.o
+
 
 clean:
-	rm -rf ./build/blank.o
+	rm -rf $(FILES)
+	rm -rf ./blank.elf

@@ -124,6 +124,7 @@ int elf_validate_loaded(struct elf_header* header)
     return (elf_valid_signature(header) && elf_valid_class(header) && elf_valid_encoding(header) && elf_has_program_header(header)) ? PEACHOS_ALL_OK : -EINFORMAT;
 } 
 
+// Note: Resolves program addresses from program header type of PT_LAOD
 int elf_process_phdr_pt_load(struct elf_file* elf_file, struct elf32_phdr* phdr) {
 
     // Check: if virtual_base_address is set or not, and look for the lowest virtual base address
@@ -144,6 +145,7 @@ int elf_process_phdr_pt_load(struct elf_file* elf_file, struct elf32_phdr* phdr)
     return 0;
 }
 
+// Note: We only allow program headers of type PT_LOAD
 int elf_process_pheader(struct elf_file* elf_file, struct elf32_phdr* phdr) {
     int res = 0;
 
@@ -156,12 +158,16 @@ int elf_process_pheader(struct elf_file* elf_file, struct elf32_phdr* phdr) {
     return res;
 }
 
+// Note: Goes through program header to find program addresses
 int elf_process_pheaders(struct elf_file* elf_file) {
     int res = 0;
     struct elf_header* header = elf_header(elf_file);
 
+    // Here: we go through all the program headers and find the right header
     for (int i = 0; i < header->e_phnum; i++) {
+        // Here: we get program header by index
         struct elf32_phdr* phdr = elf_program_header(header, i);
+        // Here: we inspect the program header (goal is to accept a single pheader with the lowest addresses)
         res = elf_process_pheader(elf_file, phdr);
         if (res < 0) {
             break;
@@ -172,16 +178,18 @@ int elf_process_pheaders(struct elf_file* elf_file) {
         return res;
 }
 
+// Note: Get the actual program from the elf file
 int elf_process_loaded(struct elf_file* elf_file) {
     int res = 0;
     struct elf_header* header = elf_header(elf_file);
 
-    // Here: we check if we support this elf by checking header information
+    // Here: we check if we support this elf by checking  bheader information
     res = elf_validate_loaded(header);
     if (res < 0) {
         goto out;
     }
 
+    // Here: we resolve the program pointers from the program header
     res = elf_process_pheaders(elf_file);
     if (res < 0) {
         goto out;
@@ -191,10 +199,11 @@ int elf_process_loaded(struct elf_file* elf_file) {
         return res;
 }
 
-// Note: 
+// Note: Responsible for loading the elf program into memory, and resolving elf_file structure
 int elf_load(const char* filename, struct elf_file** file_out) {
 
     struct elf_file* elf_file = kzalloc(sizeof(struct elf_file));
+
     int fd = 0;
     int res = fopen(filename, "r");
     // Check: if opening the file is successful
@@ -213,13 +222,14 @@ int elf_load(const char* filename, struct elf_file** file_out) {
     // Here: we resolve void* elf_memory
     elf_file->elf_memory = kzalloc(stat.filesize);
 
+    // Here: we read the whole file
     res = fread(elf_file->elf_memory, stat.filesize, 1, fd);
     // Check: fread
     if (res < 0) {
         goto out;
     }
 
-    // Here: 
+    // Here: Here we load the actual executable program
     res = elf_process_loaded(elf_file);
     if (res < 0) {
         goto out;

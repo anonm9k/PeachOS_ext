@@ -117,7 +117,7 @@ void* paging_align_address(void* ptr)
     return ptr;
 }
 
-// Note: works like ceiling function
+// Note: works like floor function
 void* paging_align_to_lower_page(void* addr)
 {
     uint32_t _addr = (uint32_t) addr;
