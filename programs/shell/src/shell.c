@@ -4,7 +4,7 @@
 #include "peachos.h"
 
 int main(int argc, char** argv) {
-    print("PeachOS v1.0.0\n");
+    print("PeachOS v2.0.0\n");
     while(1) 
     {
         print("> ");
