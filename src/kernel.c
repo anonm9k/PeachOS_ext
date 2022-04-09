@@ -18,7 +18,7 @@
 #include "task/process.h"
 #include "keyboard/keyboard.h"
 #include "status.h"
-
+#include "rtc/rtc.h"
 
 uint16_t* video_mem = 0;
 uint16_t terminal_row = 0;
@@ -174,6 +174,11 @@ void kernel_main()
 
     // Initialise all system keyboards
     keyboard_init();
+
+    datetime today = rtc_get_date_time();
+    if (today.day) {
+
+    }
 
     struct process* process = 0;
     int res = process_load_switch("0:/shell.elf", &process);
