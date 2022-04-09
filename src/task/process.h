@@ -32,7 +32,7 @@ struct process {
     void* stack; 
 
     // Size of the data pointed by ptr
-    uint32_t size; 
+    uint32_t size;
 
     struct keyboard_buffer {
         char buffer[PEACHOS_KEYBOARD_BUFFER_SIZE];
