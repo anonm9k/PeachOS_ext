@@ -1,6 +1,20 @@
 #include "peachos.h"
+#include "string.h"
+
+
 #include <stdbool.h>
 
+struct command_argument* peachos_parse_command(const char* command, int max) {
+    struct command_argument* root_command = 0;
+    char scommand[1024];
+
+    if (max >= sizeof(scommand)) {
+        return 0;
+    }
+    strncpy(scommand, command, sizeof(scommand));
+    char* token = strtok(scommand, " ");
+    
+}
 
 // Note: This function will keep running(block) until a key is pressed
 int peachos_getkeyblock() {

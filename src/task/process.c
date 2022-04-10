@@ -45,7 +45,7 @@ int process_switch(struct process* process) {
 static int process_find_free_allocation_index(struct process* process) {
     int res = -ENOMEM;
     for (int i = 0; i < PEACHOS_MAX_PROGRAM_ALLOCATIONS; i++) {
-        if (process->allocations[i] == 0) {
+        if (process->allocations[i].ptr == 0) {
             res = i;
             break;
         }
@@ -72,7 +72,9 @@ void* process_malloc(struct process* process, size_t size) {
         goto out_err;
     }
     
-    process->allocations[index] = ptr;
+    process->allocations[index].ptr = ptr;
+    process->allocations[index].size = size;
+
     return ptr;
 
     out_err:
@@ -85,26 +87,44 @@ void* process_malloc(struct process* process, size_t size) {
 // Note: Given a process, checks if the ptr exists in its allocations array
 static bool process_is_process_pointer(struct process* process, void* ptr) {
     for (int i = 0; i < PEACHOS_MAX_PROGRAM_ALLOCATIONS; i++) {
-        if (process->allocations[i] == ptr) {
+        if (process->allocations[i].ptr == ptr) {
             return true;
         }
     }
     return false;
 }
 
+// Note: given an address, get the process_allocation structure from the array
+static struct process_allocation* process_get_allocation_by_addr(struct process* process, void* addr) {
+    for (int i = 0; i < PEACHOS_MAX_PROGRAM_ALLOCATIONS; i++) {
+        if (process->allocations[i].ptr == addr)
+            return &process->allocations[i];
+    }
+
+    return 0;
+};
+
 // Note: removes the pointer from process allocations array
 void process_allocation_unjoin(struct process* process, void* ptr) {
     for (int i = 0; i < PEACHOS_MAX_PROGRAM_ALLOCATIONS; i++) {
-        if (process->allocations[i] == ptr) {
-            process->allocations[i] = 0x00;
+        if (process->allocations[i].ptr == ptr) {
+            process->allocations[i].ptr = 0x00;
+            process->allocations[i].size = 0;
         }
     }
 }
 
 // Note: frees up the heap memory
 void process_free(struct process* process, void* ptr) {
-    // Check: if the pointer belong to the process
-    if (!process_is_process_pointer(process, ptr)) {
+    // Here: unlink the pages from process for the given address
+    struct process_allocation* allocation = process_get_allocation_by_addr(process, ptr);
+    // Check: if pointer is valid
+    if (!allocation) {
+        return;
+    }
+
+    int res = paging_map_to(process->task->page_directory, allocation->ptr, allocation->ptr, paging_align_address(allocation->ptr+allocation->size), 0x00);
+    if (res < 0) {
         return;
     }
 
@@ -113,9 +133,6 @@ void process_free(struct process* process, void* ptr) {
 
     // Here: we kfree the heap memory
     kfree(ptr);
-
-    // Here: we remove the pointer from tasks page directory
-    paging_map(process->task->page_directory, ptr, 0x00, 0x00);
 }
 
 // Note: this function will load the binary into memory

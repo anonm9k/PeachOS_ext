@@ -10,6 +10,11 @@
 
 typedef unsigned char PROCESS_FILETYPE;
 
+struct process_allocation {
+    void* ptr;
+    size_t size;
+};
+
 struct process {
     uint16_t id;
 
@@ -18,7 +23,7 @@ struct process {
     struct task* task;
     
     // fail-safe, mem-leak
-    void* allocations[PEACHOS_MAX_PROGRAM_ALLOCATIONS]; 
+    struct process_allocation allocations[PEACHOS_MAX_PROGRAM_ALLOCATIONS]; 
 
     // ELF? bin?
     PROCESS_FILETYPE filetype; 

@@ -3,6 +3,11 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+struct command_argument {
+    char argument[512];
+    struct command_argument* next;
+};
+
 void print(const char* message);
 int peachos_getkey();
 void* peachos_malloc(size_t size);
