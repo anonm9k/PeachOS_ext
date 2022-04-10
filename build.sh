@@ -4,7 +4,7 @@ export TARGET=i686-elf
 export PATH="$PREFIX/bin:$PATH"
 make all
 
-#ToDoList (filesystem)
+#ToDoList (filesystem) --- prio: 1
 #   Implement write() function in the filesystem
 
 #ToDoList (useful software)

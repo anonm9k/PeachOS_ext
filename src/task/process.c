@@ -63,11 +63,23 @@ void* process_malloc(struct process* process, size_t size) {
 
     int index = process_find_free_allocation_index(process);
     if (index < 0) {
-        return 0;
+        goto out_err;
     }
 
+    // MMapping the addresses so it is addressable from any ring level (PAGING_ACCESS_FROM_ALL)
+    int res = paging_map_to(process->task->page_directory, ptr, ptr, paging_align_address(ptr+size), PAGING_IS_WRITEABLE | PAGING_ACCESS_FROM_ALL | PAGING_IS_PRESENT);
+    if (res < 0) {
+        goto out_err;
+    }
+    
     process->allocations[index] = ptr;
     return ptr;
+
+    out_err:
+        if (ptr) {
+            kfree(ptr);
+        }
+        return 0;
 }   
 
 // Note: Given a process, checks if the ptr exists in its allocations array
@@ -101,6 +113,9 @@ void process_free(struct process* process, void* ptr) {
 
     // Here: we kfree the heap memory
     kfree(ptr);
+
+    // Here: we remove the pointer from tasks page directory
+    paging_map(process->task->page_directory, ptr, 0x00, 0x00);
 }
 
 // Note: this function will load the binary into memory

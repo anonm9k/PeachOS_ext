@@ -5,11 +5,12 @@
 
 int main(int argc, char** argv) {
     print("PeachOS v2.0.0\n");
-    while(1) 
-    {
+    while(1) {
         print("> ");
         char buf[1024];
         peachos_terminal_readline(buf, sizeof(buf), true);
+        print("\n");
+        peachos_process_load_start(buf);
         print("\n");
     }
     return 0;

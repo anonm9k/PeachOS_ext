@@ -20,6 +20,7 @@
 #include "status.h"
 #include "rtc/rtc.h"
 
+
 uint16_t* video_mem = 0;
 uint16_t terminal_row = 0;
 uint16_t terminal_col = 0;
@@ -183,7 +184,7 @@ void kernel_main()
     struct process* process = 0;
     int res = process_load_switch("0:/shell.elf", &process);
     if (res != PEACHOS_ALL_OK) {
-        panic("\nFailed to laod process!");
+        panic("\nFailed to load shell!");
     }
 
     task_run_first_ever_task();

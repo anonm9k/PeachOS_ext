@@ -126,6 +126,7 @@ void task_save_state(struct task* task, struct interrupt_frame* frame) {
     task->registers.esi = frame->esi;
 }
 
+// Note: we copy the string pointed by the virtual (but as per tasks page directory), to a physical address (so it is accessible by kernel)
 int copy_string_from_task(struct task* task, void* virtual, void* phys, int max) {
     // Check: should not exceed a page
     if (max >= PAGING_PAGE_SIZE) {
@@ -239,6 +240,7 @@ int task_init(struct task* task, struct process* process) {
     return 0;
 }
 
+// Note: copy from tasks stack (task->register.esp)
 void* task_get_stack_item(struct task* task, int index) {
     void* result = 0;
 

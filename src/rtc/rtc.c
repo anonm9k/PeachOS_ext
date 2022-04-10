@@ -4,7 +4,7 @@
 // Note: Check if RTC is updating 
 static int is_updating()
 {
-    outb(0x70, 0x0A);
+    outb(0x70, 0x0A); 
     return insb(0x71) & 0x80;
 }
 
@@ -14,7 +14,7 @@ static unsigned char read(int reg)
     while (is_updating())
         ;
     outb(0x70, reg);
-
+    
     return insb(0x71);
 }
 
