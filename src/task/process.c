@@ -114,6 +114,150 @@ void process_allocation_unjoin(struct process* process, void* ptr) {
     }
 }
 
+// Note: goes though all allocations and frees them
+int process_terminate_allocations(struct process* process) {
+    for (int i = 0; i < PEACHOS_MAX_PROGRAM_ALLOCATIONS; i++) {
+        process_free(process, process->allocations[i].ptr);
+    }
+    return 0;
+}
+
+// Note: frees up binary of a process program
+int process_free_binary_data(struct process* process) {
+    kfree(process->ptr);
+    return 0;
+}
+
+// Note: closes elf file of the process
+int process_free_elf_data(struct process* process) {
+    elf_close(process->elf_file);
+    return 0;
+}
+
+// Note: fress up program data
+int process_free_program_data(struct process* process) {
+    int res = 0;
+    switch(process->filetype) {
+        case PROCESS_FILETYPE_BINARY:
+            res = process_free_binary_data(process);
+        break;
+
+        case PROCESS_FILETYPE_ELF:
+            res = process_free_elf_data(process);
+        break;
+
+        default:
+            res = -EINVARG;
+    }
+    return res;
+}
+
+// Note: switches to a process in the processes
+void process_switch_to_any() {
+    for (int i = 0; i < PEACHOS_MAX_PROCESSES; i++) {
+        if (processes[i]) {
+            process_switch(processes[i]);
+            return;
+        }
+    }
+    panic("No processes to switch to!\n");
+}
+
+// Note: removes the process from processes list
+static void process_unlink(struct process* process) {
+    processes[process->id] = 0x00;
+
+    if (current_process == process) {
+        process_switch_to_any();
+    }
+}
+
+
+
+// Note: terminates a process
+int process_terminate(struct process* process) {
+    int res = 0;
+    res = process_terminate_allocations(process);
+    if (res < 0) {
+        goto out;
+    }
+
+    res = process_free_program_data(process);
+    if (res < 0) {
+        goto out;
+    }
+
+    //Here: we free the process stack
+    kfree(process->stack);
+
+    task_free(process->task);
+
+    process_unlink(process);
+    
+    out:
+        return res;
+}
+
+// Note: gets arguments from process arguments structure
+void process_get_arguments(struct process* process, int* argc, char*** argv) {
+    *argc = process->arguments.argc;
+    *argv = process->arguments.argv;
+}
+
+// Note: goes through command_argument linked list and calculates
+int process_count_command_arguments(struct command_argument* root_argument)
+{
+    struct command_argument* current = root_argument;
+    int i = 0;
+    while(current)
+    {
+        i++;
+        current = current->next;
+    }
+
+    return i;
+}
+
+int process_inject_arguments(struct process* process, struct command_argument* root_argument) {
+    int res = 0;
+    struct command_argument* current = root_argument;
+    int i = 0;
+    int argc = process_count_command_arguments(root_argument);
+    if (argc == 0)
+    {
+        res = -EIO;
+        goto out;
+    }
+
+    char **argv = process_malloc(process, sizeof(const char*) * argc);
+    if (!argv)
+    {
+        res = -ENOMEM;
+        goto out;
+    }
+
+
+    while(current)
+    {
+        char* argument_str = process_malloc(process, sizeof(current->argument));
+        if (!argument_str)
+        {
+            res = -ENOMEM;
+            goto out;
+        }
+
+        strncpy(argument_str, current->argument, sizeof(current->argument));
+        argv[i] = argument_str;
+        current = current->next;
+        i++;
+    }
+
+    process->arguments.argc = argc;
+    process->arguments.argv = argv;
+out:
+    return res;
+}
+
 // Note: frees up the heap memory
 void process_free(struct process* process, void* ptr) {
     // Here: unlink the pages from process for the given address

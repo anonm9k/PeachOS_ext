@@ -4,10 +4,9 @@
 #include "string.h"
 
 int main(int argc, char** argv) {
-    char* ptr = malloc(15);
-    strncpy(ptr, "KHITA BA", 15);
-    print(ptr);
-    
-    while (1) {}
+
+    while(1){
+    printf("%s", argv[0]);
+    };
     return 0;
 }

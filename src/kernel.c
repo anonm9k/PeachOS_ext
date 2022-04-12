@@ -21,7 +21,7 @@
 #include "rtc/rtc.h"
 
 
-uint16_t* video_mem = 0;
+uint16_t* video_mem = (uint16_t*) 0xB8000;
 uint16_t terminal_row = 0;
 uint16_t terminal_col = 0;
 
@@ -79,7 +79,7 @@ void terminal_writechar(char c, char colour)
 
 void terminal_initialize()
 {
-    video_mem = (uint16_t*)(0xB8000);
+    //video_mem = (uint16_t*)(0xB8000);
     terminal_row = 0;
     terminal_col = 0;
     for (int y = 0; y < VGA_HEIGHT; y++)
@@ -176,16 +176,29 @@ void kernel_main()
     // Initialise all system keyboards
     keyboard_init();
 
-    datetime today = rtc_get_date_time();
-    if (today.day) {
-
-    }
-
     struct process* process = 0;
-    int res = process_load_switch("0:/shell.elf", &process);
-    if (res != PEACHOS_ALL_OK) {
-        panic("\nFailed to load shell!");
+    int res = process_load_switch("0:/blank.elf", &process);
+    if (res != PEACHOS_ALL_OK)
+    {
+        panic("Failed to load blank.elf\n");
     }
+
+
+    struct command_argument argument;
+    strcpy(argument.argument, "Testing!");
+    argument.next = 0x00; 
+
+    process_inject_arguments(process, &argument);
+
+    res = process_load_switch("0:/blank.elf", &process);
+    if (res != PEACHOS_ALL_OK)
+    {
+        panic("Failed to load blank.elf\n");
+    }
+
+    strcpy(argument.argument, "Abc!");
+    argument.next = 0x00; 
+    process_inject_arguments(process, &argument);
 
     task_run_first_ever_task();
     while(1) {}
