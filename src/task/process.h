@@ -57,6 +57,8 @@ struct process {
 
     // The arguments of the process.
     struct process_arguments arguments;
+
+    struct shell* shell;
 };
 
 struct process* process_current();

@@ -2,7 +2,7 @@
 #include "kernel.h"
 #include "task/task.h"
 #include "keyboard/keyboard.h"
-
+#include "video/video.h"
 
 void* isr80h_command1_print(struct interrupt_frame* frame) {
     void* user_space_msg_buffer = task_get_stack_item(task_current(), 0);
@@ -19,6 +19,6 @@ void* isr80h_command2_getKey(struct interrupt_frame* frame) {
 
 void* isr80h_command3_putchar(struct interrupt_frame* frame) {
     char c = (char)(int) task_get_stack_item(task_current(), 0);
-    terminal_writechar(c, 15);
+    terminal_writechar(c, 142);
     return 0;
 }

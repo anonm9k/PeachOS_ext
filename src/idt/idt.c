@@ -87,7 +87,7 @@ void idt_init()
     }
 
     // Here: we set the clock
-    idt_register_interrupt_callback(0x20, idt_clock);
+    //idt_register_interrupt_callback(0x20, idt_clock);
 
     // Load the interrupt descriptor table
     idt_load(&idtr_descriptor);

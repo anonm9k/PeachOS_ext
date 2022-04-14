@@ -5,8 +5,6 @@
 
 int main(int argc, char** argv) {
 
-    while(1){
-    printf("%s", argv[0]);
-    };
+    print("\n Blank.elf at your service...");
     return 0;
 }

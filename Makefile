@@ -1,4 +1,4 @@
-FILES = ./build/kernel.asm.o ./build/kernel.o ./build/disk/disk.o ./build/disk/streamer.o ./build/fs/pparser.o ./build/fs/file.o ./build/fs/fat/fat16.o ./build/string/string.o ./build/idt/idt.asm.o ./build/idt/idt.o ./build/memory/memory.o ./build/io/io.asm.o ./build/memory/heap/heap.o ./build/memory/heap/kheap.o ./build/memory/paging/paging.o ./build/memory/paging/paging.asm.o ./build/gdt/gdt.o ./build/gdt/gdt.asm.o ./build/task/tss.asm.o ./build/task/task.o ./build/task/process.o ./build/task/task.asm.o ./build/isr80h/isr80h.o ./build/isr80h/misc.o ./build/isr80h/io.o ./build/keyboard/keyboard.o ./build/keyboard/classic.o ./build/loader/formats/elf.o ./build/loader/formats/elfloader.o ./build/isr80h/heap.o ./build/rtc/rtc.o ./build/isr80h/process.o
+FILES = ./build/kernel.asm.o ./build/kernel.o ./build/disk/disk.o ./build/disk/streamer.o ./build/fs/pparser.o ./build/fs/file.o ./build/fs/fat/fat16.o ./build/string/string.o ./build/idt/idt.asm.o ./build/idt/idt.o ./build/memory/memory.o ./build/io/io.asm.o ./build/memory/heap/heap.o ./build/memory/heap/kheap.o ./build/memory/paging/paging.o ./build/memory/paging/paging.asm.o ./build/gdt/gdt.o ./build/gdt/gdt.asm.o ./build/task/tss.asm.o ./build/task/task.o ./build/task/process.o ./build/task/task.asm.o ./build/isr80h/isr80h.o ./build/isr80h/misc.o ./build/isr80h/io.o ./build/keyboard/keyboard.o ./build/keyboard/classic.o ./build/loader/formats/elf.o ./build/loader/formats/elfloader.o ./build/isr80h/heap.o ./build/rtc/rtc.o ./build/isr80h/process.o ./build/video/video.o ./build/task/shell.o
 INCLUDES = -I./src
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
@@ -84,6 +84,9 @@ all: ./bin/boot.bin ./bin/kernel.bin user_programs
 ./build/task/process.o: ./src/task/process.c
 	i686-elf-gcc $(INCLUDES) -I./src/task $(FLAGS) -std=gnu99 -c ./src/task/process.c -o ./build/task/process.o
 
+./build/task/shell.o: ./src/task/shell.c
+	i686-elf-gcc $(INCLUDES) -I./src/task $(FLAGS) -std=gnu99 -c ./src/task/shell.c -o ./build/task/shell.o
+
 ./build/loader/formats/elf.o: ./src/loader/formats/elf.c
 	i686-elf-gcc $(INCLUDES) -I./src/loader/formats $(FLAGS) -std=gnu99 -c ./src/loader/formats/elf.c -o ./build/loader/formats/elf.o
 
@@ -116,6 +119,9 @@ all: ./bin/boot.bin ./bin/kernel.bin user_programs
 
 ./build/rtc/rtc.o: ./src/rtc/rtc.c
 	i686-elf-gcc $(INCLUDES) -I./src/rtc $(FLAGS) -std=gnu99 -c ./src/rtc/rtc.c -o ./build/rtc/rtc.o
+
+./build/video/video.o: ./src/video/video.c
+	i686-elf-gcc $(INCLUDES) -I./src/rtc $(FLAGS) -std=gnu99 -c ./src/video/video.c -o ./build/video/video.o
 
 user_programs:
 	cd ./programs/stdlib && $(MAKE) all
