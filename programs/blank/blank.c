@@ -4,7 +4,6 @@
 #include "string.h"
 
 int main(int argc, char** argv) {
-
-    print("\n Blank.elf at your service...");
+    print("OK");
     return 0;
 }

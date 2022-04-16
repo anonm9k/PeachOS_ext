@@ -282,6 +282,7 @@ void process_free(struct process* process, void* ptr) {
 // Note: this function will load the binary into memory
 // Note: this will resolve process: filesize, *ptr, filetype
 static int process_load_binary(const char* filename, struct process* process) {
+    void* program_data_ptr = 0x00;
     int res = 0;
     // Here: we open the file in read mode
     int fd = fopen(filename, "r");
@@ -300,7 +301,7 @@ static int process_load_binary(const char* filename, struct process* process) {
     }
 
     // Here: we are creating memory space for our program
-    void* program_data_ptr = kzalloc(stat.filesize);
+    program_data_ptr = kzalloc(stat.filesize);
 
     // Check: if enough memory
     if (!program_data_ptr) {
@@ -321,6 +322,11 @@ static int process_load_binary(const char* filename, struct process* process) {
     process->filetype = PROCESS_FILETYPE_BINARY;
 
     out:
+        if (res < 0){
+            if (program_data_ptr) {
+                kfree(program_data_ptr);
+            }
+        }
         // Closing file
         fclose(fd);
         return res;
