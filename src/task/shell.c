@@ -61,6 +61,7 @@ int shell_new(int id, struct shell** shell) {
     argument.next = 0x00; 
     process_inject_arguments(shell_process, &argument);
 
+    // Here: we initialize the shell, puts color
     shell_initialize(_shell);
 
     *shell = _shell;
@@ -78,6 +79,7 @@ struct shell* get_current_shell() {
     return current_shell;
 }
 
+// Note: switches to a shell in shells list given the index
 int shell_switch(int shell_id) {
     if (shells[shell_id] == 0x00) {
         return -EINVARG;
@@ -88,24 +90,26 @@ int shell_switch(int shell_id) {
     return 0;
 }
 
+// Note: switches to next shell in round order
 void shell_switch_to_next() {
     int current_shell_id = current_shell->shell_id;
 
     if (current_shell_id == 0 && shells[current_shell_id+1]) {
         shell_switch(current_shell_id+1);
     }
-    else {
+    else if (current_shell_id == 0 && !shells[current_shell_id+1]) {
         shell_switch(current_shell_id);
     }
 
-    if (current_shell_id != 0 && shells[current_shell_id+1]) {
+    else if (current_shell_id != 0 && shells[current_shell_id+1]) {
         shell_switch(current_shell_id+1);
     }
-    else {
-        shell_switch(current_shell_id-1);
+    else if (current_shell_id != 0 && !shells[current_shell_id+1]) {
+        shell_switch(0);
     }
 }
 
+// Note: initializes the shell, puts color
 void shell_initialize(struct shell* shell) {
     for (int y = 0; y < VGA_HEIGHT; y++)
     {

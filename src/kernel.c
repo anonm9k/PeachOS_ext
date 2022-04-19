@@ -99,10 +99,16 @@ void kernel_main()
 
     struct shell* shell0;
     struct shell* shell1;
+    struct shell* shell2;
+    struct shell* shell3;
+    struct shell* shell4;
 
     shell_new(0, &shell0);
     shell_new(1, &shell1);
-    
+    shell_new(2, &shell2);
+    shell_new(3, &shell3);
+    shell_new(4, &shell4);
+
     task_run_first_ever_task();
     
     while(1) {}

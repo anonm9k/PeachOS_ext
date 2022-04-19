@@ -11,16 +11,19 @@ uint16_t* video_mem = (uint16_t*) 0xB8000;
 uint16_t terminal_row = 0;
 uint16_t terminal_col = 0;
 
+// Note: get terminal information from shell this tasks process belongs to
 void terminal_init() {
     terminal_row = task_current()->process->shell->terminal->terminal_row;
     terminal_col = task_current()->process->shell->terminal->terminal_col;
 }
 
+// Note: saves our locak terminal information to the tasks shells terminal
 void terminal_save(struct terminal* terminal) {
     terminal->terminal_row = terminal_row;
     terminal->terminal_col = terminal_col;
 }
 
+// Note: returns the shell that the current task belong to
 struct shell* get_current_task_shell() {
     return task_current()->process->shell;
 }
@@ -31,6 +34,7 @@ uint16_t terminal_make_char(char c, char colour)
     return (colour << 8) | c;
 }
 
+// Note: puts a character into the shells video buffer
 void terminal_putchar(int x, int y, char c, char colour)
 {
     get_current_task_shell()->video_mem[(y * VGA_WIDTH) + x] = terminal_make_char(c, colour);
@@ -98,17 +102,18 @@ void print(const char* str)
     }
 }
 
-void terminal_initialize()
-{
-    //video_mem = (uint16_t*)(0xB8000);
-    terminal_row = 0;
-    terminal_col = 0;
-    for (int y = 0; y < VGA_HEIGHT; y++)
-    {
-        for (int x = 0; x < VGA_WIDTH; x++)
-        {
-            terminal_putchar(x, y, ' ', 142);
-        }
-    }   
+
+// void terminal_initialize()
+// {
+//     //video_mem = (uint16_t*)(0xB8000);
+//     terminal_row = 0;
+//     terminal_col = 0;
+//     for (int y = 0; y < VGA_HEIGHT; y++)
+//     {
+//         for (int x = 0; x < VGA_WIDTH; x++)
+//         {
+//             terminal_putchar(x, y, ' ', 142);
+//         }
+//     }   
      
-}
+// }

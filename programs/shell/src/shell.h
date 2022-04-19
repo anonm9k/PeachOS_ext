@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+struct command_argument;
 
+void parsenexec(char* command);
 
 #endif
