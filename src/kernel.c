@@ -52,7 +52,7 @@ struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
 
 void kernel_main()
 {
-    terminal_initialize();
+    // terminal_initialize();
     //print("Operaing system: PeachOS\n");
 
     // Creating GDT
@@ -97,16 +97,12 @@ void kernel_main()
     // Initialise all system keyboards
     keyboard_init();
 
-    struct process* process = 0;
-    int res = process_load_switch("0:/shell.elf", &process);
-    if (res != PEACHOS_ALL_OK)
-    {
-        panic("Failed to load blank.elf\n");
-    }
+    struct shell* shell0;
+    struct shell* shell1;
 
-    // struct shell* shell0 = kzalloc(sizeof(struct shell));
-    // shell_new(0, shell0);
-
+    shell_new(0, &shell0);
+    shell_new(1, &shell1);
+    
     task_run_first_ever_task();
     
     while(1) {}

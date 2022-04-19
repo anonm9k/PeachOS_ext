@@ -4,7 +4,10 @@
 #include "peachos.h"
 
 int main(int argc, char** argv) {
+    
     print("PeachOS v2.0.0\n");
+    printf("Shell ID: %s\n", argv[0]);
+    print("Press '~' to switch between shells\n");
     while(1) {
         print("> ");
         char buf[1024];

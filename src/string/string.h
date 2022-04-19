@@ -11,5 +11,6 @@ int strncmp(const char* str1, const char* str2, int n);
 char tolower(char s1);
 int istrncmp(const char* s1, const char* s2, int n);
 int strnlen_terminator(const char* str, int max, char terminator);
+char* itoa(int i);
 
 #endif

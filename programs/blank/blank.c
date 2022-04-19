@@ -4,6 +4,6 @@
 #include "string.h"
 
 int main(int argc, char** argv) {
-    print("OK");
+    printf("Shell ID: %s", argv[0]);
     return 0;
 }

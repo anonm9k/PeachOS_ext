@@ -6,6 +6,8 @@
 #include "kernel.h"
 #include "idt/idt.h"
 #include "task/task.h"
+#include "task/shell.h"
+
 
 #define CLASSIC_KEYBOARD_CAPSLOCK 0x3A
 
@@ -85,6 +87,11 @@ void classic_keyboard_interrupt_handler() {
     }
 
     uint8_t c = classic_keyboard_scancode_to_char(scancode);
+
+    if (c == 96) {
+        shell_switch_to_next();
+        return;
+    }
 
     // Note: if converted character is valid ASCII
     if (c != 0) {

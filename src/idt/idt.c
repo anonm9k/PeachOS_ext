@@ -61,9 +61,15 @@ void idt_handle_execption() {
 }
 
 // Note: on every clock we switch to the next task (multitasking)
+int c = 0; // Just putting some delay before starting context switching
 void idt_clock() {
     outb(0x20, 0x20); // We have to acknowledge it here because task_next() never returns
-    task_next();
+    if (c < 10) {
+        c++;
+    }
+    else {
+        task_next();
+    }
 }
 
 // Note: initializes descriptor

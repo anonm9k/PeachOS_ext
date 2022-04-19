@@ -16,8 +16,11 @@ struct shell {
     struct process* current_process;
 };
 
-int shell_new(int id, struct shell* shell);
+int shell_new(int id, struct shell** shell);
 struct shell* get_current_shell();
 bool shell_slot_available(int id);
+void shell_switch_to_next();
+int shell_switch(int shell_id);
+void shell_initialize(struct shell* shell);
 
 #endif

@@ -172,8 +172,6 @@ static void process_unlink(struct process* process) {
     }
 }
 
-
-
 // Note: terminates a process
 int process_terminate(struct process* process) {
     int res = 0;
