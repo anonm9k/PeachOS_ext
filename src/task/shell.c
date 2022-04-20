@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "shell.h"
 #include "status.h"
+#include "kernel.h"
 #include "task/task.h"
 #include "task/process.h"
 #include "memory/heap/kheap.h"
@@ -115,7 +116,7 @@ void shell_initialize(struct shell* shell) {
     {
         for (int x = 0; x < VGA_WIDTH; x++)
         {
-            shell->video_mem[(y * VGA_WIDTH) + x] = terminal_make_char(' ', 142);
+            shell->video_mem[(y * VGA_WIDTH) + x] = terminal_make_char(' ', PEACHOS_COLOR);
         }
     }   
      

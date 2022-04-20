@@ -19,6 +19,6 @@ void* isr80h_command2_getKey(struct interrupt_frame* frame) {
 
 void* isr80h_command3_putchar(struct interrupt_frame* frame) {
     char c = (char)(int) task_get_stack_item(task_current(), 0);
-    terminal_writechar(c, 142);
+    terminal_writechar(c, PEACHOS_COLOR);
     return 0;
 }

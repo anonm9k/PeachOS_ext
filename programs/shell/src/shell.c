@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
         parsenexec(command);
         print("\n");
         //peachos_system_run(command);
-        print("\n");
+        //print("\n");
     }
     return 0;
 }
@@ -42,5 +42,11 @@ void parsenexec(char* command) {
     if(istrncmp("pwd", commands->argument, 1025) == 0) {
         print("\n");
         print(current_directory);
+    }
+
+    if(istrncmp("-h", commands->argument, 1025) == 0) {
+        print("\nls - list directory contents\n");
+        print("pwd - print current working directory\n");
+        print("cd - change current directory to the given directory\n");
     }
 }

@@ -650,7 +650,6 @@ struct fat_item* fat16_get_directory_entry(struct disk* disk, struct path_part* 
     while(next_part != 0) {
         // Check: if there is a next part, then our current item must be a directory right?
         if (current_item->type != FAT_ITEM_TYPE_DIRECTORY) {
-            print("Cannot access file. Not a directory");
             current_item = 0;
             break;
         }

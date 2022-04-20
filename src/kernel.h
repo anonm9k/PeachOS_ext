@@ -3,6 +3,7 @@
 
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
+#define PEACHOS_COLOR 240
 
 #define PEACHOS_MAX_PATH 108
 

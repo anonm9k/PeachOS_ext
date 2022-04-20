@@ -1,4 +1,5 @@
 #include "video.h"
+#include "kernel.h"
 #include <stdint.h>
 #include <stddef.h>
 #include "string/string.h"
@@ -88,7 +89,7 @@ void terminal_backspace() {
     }
 
     terminal_col -=1;
-    terminal_writechar(' ', 142);
+    terminal_writechar(' ', PEACHOS_COLOR);
     terminal_col -=1;
     backspace = false;
 }
@@ -98,7 +99,7 @@ void print(const char* str)
     size_t len = strlen(str);
     for (int i = 0; i < len; i++)
     {
-        terminal_writechar(str[i], 142);
+        terminal_writechar(str[i], PEACHOS_COLOR);
     }
 }
 
